@@ -102,6 +102,10 @@ func (s *Server) applyService() {
 		managementAuthCheck.Check(c, s.Context())
 	})
 	applyRoutes(managementGroup, managementRoutes)
+
+	amfNwdafOAMGroup := s.router.Group("/nwdaf-oam")
+	amfNwdafOAMRoutes := s.getNwdafOamRoutes()
+	applyRoutes(amfNwdafOAMGroup, amfNwdafOAMRoutes)
 }
 
 func (s *Server) Run(wg *sync.WaitGroup) error {

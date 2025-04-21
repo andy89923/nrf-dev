@@ -12,11 +12,14 @@ type ProcessorNrf interface {
 
 type Processor struct {
 	ProcessorNrf
+
+	TokenExpiration int32 // milliseconds
 }
 
 func NewProcessor(nrf ProcessorNrf) (*Processor, error) {
 	p := &Processor{
-		ProcessorNrf: nrf,
+		ProcessorNrf:    nrf,
+		TokenExpiration: 1000, // default expiration time
 	}
 	return p, nil
 }
