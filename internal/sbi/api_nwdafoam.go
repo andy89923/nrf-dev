@@ -67,7 +67,7 @@ func (s *Server) NfLoadLevelAnalyticsNotification(c *gin.Context) {
 	}
 	logger.SBILog.Infoln("Notification:", notification)
 
-	// TODO: process notification
+	s.Processor().ReceiveNfLoadLevelAnalytics(&notification)
 
 	c.Status(http.StatusNoContent)
 }

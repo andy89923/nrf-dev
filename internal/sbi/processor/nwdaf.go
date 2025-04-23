@@ -4,7 +4,36 @@ import (
 	"context"
 
 	"github.com/free5gc/nrf/internal/logger"
+	"github.com/free5gc/openapi/models"
 )
+
+func (p *Processor) ReceiveNfLoadLevelAnalytics(notification *[]models.NnwdafEventsSubscriptionNotification) {
+	if (notification == nil) || (len(*notification) == 0) {
+		logger.ProcessorLog.Warnln("ReceiveNfLoadLevelAnalytics: notification is nil or empty")
+		return
+	}
+	if len((*notification)[0].EventNotifications) == 0 {
+		logger.ProcessorLog.Warnln("ReceiveNfLoadLevelAnalytics: EventNotifications is nil or empty")
+		return
+	}
+	eventNotification := (*notification)[0].EventNotifications[0]
+	if len(eventNotification.NfLoadLevelInfos) == 0 {
+		logger.ProcessorLog.Warnln("ReceiveNfLoadLevelAnalytics: NfLoadLevelInfos is nil or empty")
+		return
+	}
+
+	nfLoadLevelInfo := eventNotification.NfLoadLevelInfos[0]
+	if nfLoadLevelInfo.Confidence == 0 {
+		// Confidence is 0, ignore this notification (This notification is not prediction)
+		logger.ProcessorLog.Warnln("ReceiveNfLoadLevelAnalytics: Confidence is 0, ignore this notification")
+		return
+	}
+
+	logger.ProcessorLog.Warnf("ReceiveNfLoadLevelAnalytics: NfLoadLevelInfo: %+v", nfLoadLevelInfo)
+
+	// TODO: Process the nfLoadLevelInfo
+	// If the NfLoadLevelPeak is greater than the threshold, adjust the token period
+}
 
 func (p *Processor) subscribeNfLoadLevelAnalytics(
 	ctx context.Context,
