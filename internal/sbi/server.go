@@ -106,6 +106,11 @@ func (s *Server) applyService() {
 	amfNwdafOAMGroup := s.router.Group("/nwdaf-oam")
 	amfNwdafOAMRoutes := s.getNwdafOamRoutes()
 	applyRoutes(amfNwdafOAMGroup, amfNwdafOAMRoutes)
+
+	// dynamic config
+	dynamicConfigRoutes := s.getDynamicConfigRoutes()
+	dynamicConfigGroup := s.router.Group("/config")
+	applyRoutes(dynamicConfigGroup, dynamicConfigRoutes)
 }
 
 func (s *Server) Run(wg *sync.WaitGroup) error {

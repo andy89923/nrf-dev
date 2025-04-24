@@ -14,7 +14,7 @@ func (s *Server) getDynamicConfigRoutes() []Route {
 		{
 			Name:    "Dynamic Config",
 			Method:  http.MethodPost,
-			Pattern: "/config",
+			Pattern: "/post-config",
 			APIFunc: s.ConfigPost,
 		},
 	}

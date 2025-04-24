@@ -30,6 +30,7 @@ func (p *Processor) ReceiveNfLoadLevelAnalytics(notification *[]models.NnwdafEve
 	}
 
 	logger.ProcessorLog.Warnf("ReceiveNfLoadLevelAnalytics: NfLoadLevelInfo: %+v", nfLoadLevelInfo)
+	logger.ProcessorLog.Warnf("LoadLevel Peak: %+v", nfLoadLevelInfo.NfLoadLevelpeak)
 
 	// TODO: Process the nfLoadLevelInfo
 	// If the NfLoadLevelPeak is greater than the threshold, adjust the token period
