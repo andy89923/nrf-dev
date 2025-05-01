@@ -33,12 +33,16 @@ type Server struct {
 
 	httpServer *http.Server
 	router     *gin.Engine
+
+	tokenRequestCount int
+	sync.Mutex
 }
 
 func NewServer(nrf ServerNrf, tlsKeyLogPath string) (*Server, error) {
 	s := &Server{
-		ServerNrf: nrf,
-		router:    logger_util.NewGinWithLogrus(logger.GinLog),
+		ServerNrf:         nrf,
+		router:            logger_util.NewGinWithLogrus(logger.GinLog),
+		tokenRequestCount: 0,
 	}
 	cfg := s.Config()
 	bindAddr := cfg.GetSbiBindingAddr()
@@ -98,6 +102,15 @@ func (s *Server) applyService() {
 		managementAuthCheck.Check(c, s.Context())
 	})
 	applyRoutes(managementGroup, managementRoutes)
+
+	amfNwdafOAMGroup := s.router.Group("/nwdaf-oam")
+	amfNwdafOAMRoutes := s.getNwdafOamRoutes()
+	applyRoutes(amfNwdafOAMGroup, amfNwdafOAMRoutes)
+
+	// dynamic config
+	dynamicConfigRoutes := s.getDynamicConfigRoutes()
+	dynamicConfigGroup := s.router.Group("/config")
+	applyRoutes(dynamicConfigGroup, dynamicConfigRoutes)
 }
 
 func (s *Server) Run(wg *sync.WaitGroup) error {

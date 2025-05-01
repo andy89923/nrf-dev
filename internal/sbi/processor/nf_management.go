@@ -324,6 +324,10 @@ func (p *Processor) NFDeregisterProcedure(nfInstanceID string) *models.ProblemDe
 	// Minus NF Register Conter
 	p.Context().DelNfRegister()
 	logger.NfmLog.Infof("NfDeregister Success: %v [%v]", nfInstanceType, nfInstanceID)
+
+	if nfInstanceType == models.NrfNfManagementNfType_NWDAF {
+		p.deleteSubscriptions(context.Background(), p.NwdafUri)
+	}
 	return nil
 }
 
@@ -502,6 +506,23 @@ func (p *Processor) NFRegisterProcedure(
 			}
 		}
 		c.JSON(http.StatusCreated, putData)
+
+		go func() {
+			// Wait for NWDAF to be ready
+			time.Sleep(3 * time.Second)
+
+			if nf.NfType == models.NrfNfManagementNfType_NWDAF {
+				nwdafUri := ""
+				for _, service := range nfProfile.NfServices {
+					if service.ServiceName == models.ServiceName_NNWDAF_EVENTSSUBSCRIPTION {
+						endpoint := service.IpEndPoints[0]
+						nwdafUri = fmt.Sprintf("%s://%s:%d", service.Scheme, endpoint.Ipv4Address, endpoint.Port)
+						break
+					}
+				}
+				p.subscribeNfLoadLevelAnalytics(context.Background(), nwdafUri)
+			}
+		}()
 		return
 	}
 }

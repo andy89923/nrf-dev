@@ -48,7 +48,7 @@ func (p *Processor) AccessTokenProcedure(request models.NrfAccessTokenAccessToke
 	logger.AccTokenLog.Debugln("In AccessTokenProcedure")
 
 	var (
-		expiration int32  = 1000
+		expiration int32  = p.TokenExpiration
 		tokenType  string = "Bearer"
 	)
 	scope := request.Scope

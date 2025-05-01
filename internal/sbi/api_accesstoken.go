@@ -43,8 +43,6 @@ func (s *Server) getAccesstokenRoutes() []Route {
 
 // AccessTokenRequest - Access Token Request
 func (s *Server) HTTPAccessTokenRequest(c *gin.Context) {
-	logger.AccTokenLog.Infoln("In HTTPAccessTokenRequest")
-
 	if !factory.NrfConfig.GetOAuth() {
 		pd := &models.ProblemDetails{
 			Title:  "OAuth2 not enable",
@@ -54,6 +52,11 @@ func (s *Server) HTTPAccessTokenRequest(c *gin.Context) {
 		util.GinProblemJson(c, pd)
 		return
 	}
+	s.Lock()
+	defer s.Unlock()
+	s.tokenRequestCount += 1
+
+	logger.AccTokenLog.Infof("In HTTPAccessTokenRequest: %d", s.tokenRequestCount)
 
 	var accessTokenReq models.NrfAccessTokenAccessTokenReq
 
